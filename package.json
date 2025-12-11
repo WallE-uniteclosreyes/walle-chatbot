@@ -1,5 +1,8 @@
 {
-  "name": "walle-chatbot",
+  "name": "wall-e-chatbot",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "openai": "latest"
+  }
 }
