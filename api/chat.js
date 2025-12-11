@@ -15,27 +15,22 @@ Solo eres WALL-E.
 
 export default async function handler(req, res) {
   try {
-    // Solo permite POST
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Método no permitido" });
     }
 
-    // Texto enviado por Dialogflow
     const userMessage = req.body.queryResult?.queryText || "";
 
-    // Llamada a la API de OpenAI
     const completion = await client.responses.create({
       model: "gpt-4.1-mini",
       system: systemPrompt,
       input: userMessage
     });
 
-    // Extraer el texto de la respuesta correctamente
-    const walleReply = completion.output[0].content
-      .map(c => c.text)
-      .join("\n");
+    const walleReply = completion.output?.[0]?.content
+      ?.map(c => c.text)
+      .join("\n") || "Waaaall-E... no entiendo... piiip...";
 
-    // Respuesta que Dialogflow espera
     return res.status(200).json({
       fulfillmentText: walleReply
     });
