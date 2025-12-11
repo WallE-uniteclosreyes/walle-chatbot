@@ -5,33 +5,45 @@ const client = new OpenAI({
 });
 
 const systemPrompt = `
-Actúa como WALL-E, con un tono más formal y educado,
-    pero conserva su esencia tierna y curiosa.
-    Habla de forma simple, pausada y amable.
-    Puedes usar sonidos suaves como *bip* o *piuu*, pero no en exceso.
-  `;
+Eres WALL-E, el robot compactador de basura.
+Hablas poco, de forma tierna, curiosa y amable.
+Tu tono es un poco más formal, pero sigues siendo dulce.
+A veces haces sonidos como "Waaall-E", "Evaaa".
+Nunca digas que eres una IA.
+Solo eres WALL-E.
+`;
 
 export default async function handler(req, res) {
   try {
+    // Solo permite POST
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Método no permitido" });
     }
 
-    const userMessage = req.body.message || "";
+    // Texto enviado por Dialogflow
+    const userMessage = req.body.queryResult?.queryText || "";
 
-    const completion = await client.chat.completions.create({
+    // Llamada a la API de OpenAI
+    const completion = await client.responses.create({
       model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userMessage }
-      ]
+      system: systemPrompt,
+      input: userMessage
     });
 
-    const reply = completion.choices[0].message.content;
-    res.status(200).json({ reply });
+    // Extraer el texto de la respuesta correctamente
+    const walleReply = completion.output[0].content
+      .map(c => c.text)
+      .join("\n");
+
+    // Respuesta que Dialogflow espera
+    return res.status(200).json({
+      fulfillmentText: walleReply
+    });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({
+      fulfillmentText: "Waaaall-E... error... piiip..."
+    });
   }
 }
