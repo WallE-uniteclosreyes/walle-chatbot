@@ -1,14 +1,5 @@
 {
   "name": "walle-chatbot",
   "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "express": "latest",
-    "cors": "latest",
-    "openai": "latest"
-  }
+  "type": "module"
 }
